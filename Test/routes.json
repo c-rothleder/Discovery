@@ -1,0 +1,31 @@
+[
+  {
+    "transit": "Sunnyvale Transit Center",
+    "route": 53
+
+  },
+  {
+    "transit": "Valley Fair",
+      "route": 59
+
+  },
+  {
+    "transit": "Santa Clara Transit Center",
+      "route": 21
+
+  },
+  {
+   "transit": "Palo Alto Transit Center",
+    "route": 522
+  },
+  {
+    "transit": "Milpitas BART",
+    "route": 60
+
+  },
+
+  {
+    "transit": "Palo Alto Transit Center",
+    "route": 22
+  }
+]

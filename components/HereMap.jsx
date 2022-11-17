@@ -5,8 +5,10 @@ import { connect } from 'react-redux';
 //import { decode } from './Here/PolylineEncoderDecoder';
 
 import { originPropType, destinationPropType } from '../commonPropTypes'; // function to decode polyline string
+import Input from "./Input";
 
 //const destinationIcon = require('../assets/DestinationIcon.png');
+
 
 class HereMap extends Component {
   constructor(props) {
@@ -115,6 +117,7 @@ class HereMap extends Component {
 
     return (
       <View style={styles.outerView}>
+        <Input />
         <MapView
           style={{ flex: 1 }}
           provider={PROVIDER_GOOGLE}
