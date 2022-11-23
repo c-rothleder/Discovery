@@ -2,21 +2,84 @@ import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Polyline, Marker } from 'react-native-maps';
 import { connect } from 'react-redux';
+import uuid from 'react-native-uuid';
 //import { decode } from './Here/PolylineEncoderDecoder';
-
+import stops from "../Test/stops.json";
 import { originPropType, destinationPropType } from '../commonPropTypes'; // function to decode polyline string
+
+
 import Input from "./Input";
 
-//const destinationIcon = require('../assets/DestinationIcon.png');
+const destinationIcon = require('../assets/destinationIcon.png');
 
 
 class HereMap extends Component {
+
+  // const busStop = {
+  //   latitude: 37.377591,
+  //   longitude: -122.030962
+  // }
+
+  // const buildCoordinates = () => {
+  //
+  //   stops.forEach(stop => {
+  //     let coordinate = {};
+  //     stop.forEach((currStop, curIndex) => {
+  //
+  //       if(curIndex == 2)
+  //         Object.assign(coordinate, {longitude:currStop});
+  //       else if(curIndex == 3)
+  //         Object.assign(coordinate, {latitude:currStop});
+  //
+  //     })
+  //     this.listofCoordinates.push(coordinate);
+  //   })
+  // }
+
   constructor(props) {
     super(props);
     this.state = {
       allRoutesFullPolylines: [],
     };
+
+    this.state = {
+      listofCoordinates:[]
+    };
+
+
+
+
     // this.getPolylineCoords = this.getPolylineCoords.bind(this);
+  }
+
+  buildCoordinates () {
+
+    let allCoordinates = [];
+    stops.forEach(stop => {
+      let coordinate = {};
+      stop.forEach((currStop, curIndex) => {
+
+        if(curIndex == 2)
+          coordinate["longitude"] = currStop;
+        else if(curIndex == 3)
+          coordinate["latitude"] = currStop;
+
+        coordinate["id"] = uuid.v4();
+
+      })
+
+    allCoordinates.push(coordinate);
+
+
+    })
+
+
+    this.setState( () => ({
+      listofCoordinates: [...allCoordinates]
+
+    }), () => alert(JSON.stringify(this.state.listofCoordinates))
+    )
+
   }
 
   /**
@@ -31,9 +94,16 @@ class HereMap extends Component {
   }
    */
 
+  /* ComponentDid*/
   componentDidMount() {
     this.getRouteData();
+    this.buildCoordinates();
+
   }
+
+
+
+
 
   /**
      * Send request to the HERE API for the routing polyline data (the lines on the map)
@@ -129,9 +199,29 @@ class HereMap extends Component {
             longitudeDelta: 0.0421,
           }}
         >
-          {this.showAllPolylines()}
-          {this.props.destination
-                            && <Marker coordinate={this.props.destination} icon={destinationIcon} />}
+
+          <Marker coordinate = {{
+            latitude: this.props.origin.latitude,
+            longitude: this.props.origin.longitude
+          }}  pinColor="orange"/>
+
+          {
+
+            this.state.listofCoordinates.map( busCoordinate => {
+                  return <Marker  id = {busCoordinate.id} coordinate = {busCoordinate}  pinColor="orange"/>
+            })
+          }
+
+
+
+          {/*/>*/}
+
+          {/*  )*/}
+          {/*}*/}
+          {/*<Marker  coordinate = {this.busStop} />*/}
+          {/*{this.showAllPolylines()}*/}
+          {/*{this.props.destination*/}
+          {/*                  && <Marker coordinate={this.props.destination} icon={destinationIcon} />}*/}
         </MapView>
       </View>
     );
