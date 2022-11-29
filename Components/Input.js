@@ -4,47 +4,65 @@ import routes from "../Test/routes.json"
 
 import { SafeAreaView, StyleSheet, TextInput, Button , View} from "react-native";
 
-
-const Input = () => {
-    const [transitName, onChangeTransit] = React.useState("");
-
-    const findRoute = (transit) => {
-        if(transit.transit.toLowerCase() === transitName.toLowerCase())
+class Input extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+           transitName: ""
+        };
+    }
+    updateTransitName = (text) => {
+        this.setState({transitName : text})
+    }
+    findRoute = (transit) => {
+        if(transit.transit.toLowerCase() === this.state.transitName.toLowerCase())
             return transit;
     }
-
-    // https://publictransithub.com/api/stopsonroute?route_id='53'
-
-    const printRoute = () => {
-        const route = routes.filter(findRoute);
-        route.forEach(r => {
-            alert(`Route is ${JSON.stringify(r.route)}`);
+    printRoute = () => {
+        const route = routes.filter(this.findRoute);
+        route.forEach(async r => {
+            let api = "%27%27"
+            let copy = api.split("%");
+            copy[1] = copy[1] + r.route;
+            let res = copy.join("%");
+            let URL = "https://publictransithub.com/api/stopsonroute/?route_id=" + res;
+            let StopResp = await fetch(URL);
+            let respJSONRouteStops = await StopResp.json();
+            this.props.handleFindRoute(respJSONRouteStops);
         });
-
     }
+    render(){
+        return (
+            <SafeAreaView style = {styles.fixToText}>
+                <View >
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={transitName = this.updateTransitName}
+                        value={this.state.transitName}
+                        placeholder="Type in name of transit"
+                        keyboardType="default"
+                    />
+                </View>
+    
+                <View >
+                    <Button
+                        title="Find Routes"
+                        onPress={this.printRoute}
+                    />
+                </View>
+            </SafeAreaView>
+        );
+    }
+}
 
-    return (
-        <SafeAreaView style = {styles.fixToText}>
-            <View >
-                <TextInput
-                    style={styles.input}
-                    onChangeText={onChangeTransit}
-                    value={transitName}
-                    placeholder="Type in name of transit"
-                    keyboardType="default"
-                />
-            </View>
+// const Input = () => {
+//     const [transitName, onChangeTransit] = React.useState("");
+    
+//     // https://publictransithub.com/api/stopsonroute?route_id='53'
 
-            <View >
-                <Button
-                    title="Find Routes"
-                    onPress={printRoute}
-                />
-            </View>
-        </SafeAreaView>
 
-    );
-};
+    
+// };
 
 
 

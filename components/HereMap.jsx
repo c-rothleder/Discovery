@@ -4,7 +4,7 @@ import MapView, { PROVIDER_GOOGLE, Polyline, Marker } from 'react-native-maps';
 import { connect } from 'react-redux';
 import uuid from 'react-native-uuid';
 //import { decode } from './Here/PolylineEncoderDecoder';
-import stops from "../Test/stops.json";
+//import stops from "../Test/stops.json";
 import { originPropType, destinationPropType } from '../commonPropTypes'; // function to decode polyline string
 
 
@@ -43,7 +43,8 @@ class HereMap extends Component {
     };
 
     this.state = {
-      listofCoordinates:[]
+      listofCoordinates:[],
+      routeStops: []
     };
 
 
@@ -52,10 +53,16 @@ class HereMap extends Component {
     // this.getPolylineCoords = this.getPolylineCoords.bind(this);
   }
 
-  buildCoordinates () {
+  handleFindRoute(StopData){
+    this.setState( () => ({
+      routeStops: [...StopData]
+    }))
+    this.buildCoordinates();
+  }
 
+  buildCoordinates() {
     let allCoordinates = [];
-    stops.forEach(stop => {
+    this.state.routeStops.forEach(stop => {
       let coordinate = {};
       stop.forEach((currStop, curIndex) => {
 
@@ -77,8 +84,7 @@ class HereMap extends Component {
     this.setState( () => ({
       listofCoordinates: [...allCoordinates]
 
-    }), () => alert(JSON.stringify(this.state.listofCoordinates))
-    )
+    }))
 
   }
 
@@ -97,8 +103,6 @@ class HereMap extends Component {
   /* ComponentDid*/
   componentDidMount() {
     this.getRouteData();
-    this.buildCoordinates();
-
   }
 
 
@@ -187,7 +191,7 @@ class HereMap extends Component {
 
     return (
       <View style={styles.outerView}>
-        <Input />
+        <Input handleFindRoute = {this.handleFindRoute.bind(this)}/>
         <MapView
           style={{ flex: 1 }}
           provider={PROVIDER_GOOGLE}
