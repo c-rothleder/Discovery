@@ -6,7 +6,7 @@ import uuid from 'react-native-uuid';
 //import { decode } from './Here/PolylineEncoderDecoder';
 //import stops from "../Test/stops.json";
 import { originPropType, destinationPropType } from '../commonPropTypes'; // function to decode polyline string
-
+import { TouchableOpacity} from 'react-native-gesture-handler';
 
 import Input from "./Input";
 
@@ -44,13 +44,48 @@ class HereMap extends Component {
 
     this.state = {
       listofCoordinates:[],
-      routeStops: []
+      routeStops: [],
+      restaurantIds: [],
+      restaurantInfo:[]
     };
 
 
 
 
+
     // this.getPolylineCoords = this.getPolylineCoords.bind(this);
+  }
+
+  async getRestaurantIds(id) {
+
+    const url = `https://publictransithub.com/api/restaurants/getrestaurants?stop_id=${id}`;
+    const restaurantData = await fetch(url);
+    const restaurantJson = await restaurantData.json();
+    this.setState(() => ({
+      restaurantIds: [...restaurantJson]
+    }))
+
+    this.getRestaurantInfo(restaurantJson);
+  }
+
+  async getRestaurantInfo(restaurantJson) {
+
+
+    const restaurantData = await Promise.all(
+        restaurantJson.map( async id => {
+          if(id[0] > 0) {
+            const url = `https://publictransithub.com/api/restaurants/getrestaurant?restaurant_id=${id[0]}`;
+            const data = await fetch(url);
+            const jsonData = await data.json();
+            return jsonData;
+          }
+
+    }))
+    this.setState(() => ({
+      restaurantInfo: [...restaurantData]
+    }))
+    // alert(JSON.stringify(restaurantData));
+
   }
 
   handleFindRoute(StopData){
@@ -66,12 +101,12 @@ class HereMap extends Component {
       let coordinate = {};
       stop.forEach((currStop, curIndex) => {
 
-        if(curIndex == 2)
+        if(curIndex === 2)
           coordinate["longitude"] = currStop;
-        else if(curIndex == 3)
+        else if(curIndex === 3)
           coordinate["latitude"] = currStop;
-
-        coordinate["id"] = uuid.v4();
+        else if(curIndex === 0)
+          coordinate["id"] = currStop;
 
       })
 
@@ -87,6 +122,13 @@ class HereMap extends Component {
     }))
 
   }
+
+  showModal() {
+
+  }
+
+
+
 
   /**
      *
@@ -177,6 +219,8 @@ class HereMap extends Component {
     return polylines;
   }
 
+
+
   render() {
     /*
             Sometimes the origin doesn't get initialized right (depends on app performance and location permissions), so if it's not defined yet, just show a map without an initial region.
@@ -212,8 +256,12 @@ class HereMap extends Component {
           {
 
             this.state.listofCoordinates.map( busCoordinate => {
-                  return <Marker  id = {busCoordinate.id} coordinate = {busCoordinate}  pinColor="orange"/>
+                  return <Marker onPress = {() => this.getRestaurantIds( busCoordinate.id)}  id = {busCoordinate.id} coordinate = {busCoordinate}  pinColor="orange"/>
+
+
             })
+
+
           }
 
 
