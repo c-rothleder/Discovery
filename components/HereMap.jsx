@@ -7,6 +7,7 @@ import uuid from 'react-native-uuid';
 //import stops from "../Test/stops.json";
 import { originPropType, destinationPropType } from '../commonPropTypes'; // function to decode polyline string
 import { TouchableOpacity} from 'react-native-gesture-handler';
+import Attraction from './restaurant';
 
 import Input from "./Input";
 
@@ -60,17 +61,15 @@ class HereMap extends Component {
 
     const url = `https://publictransithub.com/api/restaurants/getrestaurants?stop_id=${id}`;
     const restaurantData = await fetch(url);
-    const restaurantJson = await restaurantData.json();
-    this.setState(() => ({
-      restaurantIds: [...restaurantJson]
-    }))
-
+    const restaurantJson = await restaurantData.json;
+    //const restaurantJson = JSON.parse(restaurantData)
+    // this.setState(() => ({
+    //   restaurantIds: [...restaurantJson]
+    // }))
     this.getRestaurantInfo(restaurantJson);
   }
 
   async getRestaurantInfo(restaurantJson) {
-
-
     const restaurantData = await Promise.all(
         restaurantJson.map( async id => {
           if(id[0] > 0) {
@@ -79,13 +78,14 @@ class HereMap extends Component {
             const jsonData = await data.json();
             return jsonData;
           }
-
     }))
     this.setState(() => ({
       restaurantInfo: [...restaurantData]
     }))
-    // alert(JSON.stringify(restaurantData));
+  }
 
+  async showAttraction(id) {
+    alert(id)
   }
 
   handleFindRoute(StopData){
@@ -123,9 +123,6 @@ class HereMap extends Component {
 
   }
 
-  showModal() {
-
-  }
 
 
 
@@ -256,7 +253,7 @@ class HereMap extends Component {
           {
 
             this.state.listofCoordinates.map( busCoordinate => {
-                  return <Marker onPress = {() => this.getRestaurantIds( busCoordinate.id)}  id = {busCoordinate.id} coordinate = {busCoordinate}  pinColor="orange"/>
+                  return <Marker onPress ={()=>this.showAttraction(busCoordinate.id)}  id = {busCoordinate.id} coordinate = {busCoordinate}  pinColor="orange"/>
 
 
             })
