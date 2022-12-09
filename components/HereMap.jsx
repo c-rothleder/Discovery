@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Modal, useState, Text, Pressable } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Polyline, Marker } from 'react-native-maps';
 import { connect } from 'react-redux';
 import uuid from 'react-native-uuid';
@@ -8,10 +8,13 @@ import uuid from 'react-native-uuid';
 import { originPropType, destinationPropType } from '../commonPropTypes'; // function to decode polyline string
 import { TouchableOpacity} from 'react-native-gesture-handler';
 import Attraction from './restaurant';
-
+import Card from './modal';
+import { navigationPropType } from '../commonPropTypes';
+ import Navigation from '../AppNavigation';
+ import { useNavigation } from '@react-navigation/native';
 import Input from "./Input";
 
-const destinationIcon = require('../assets/destinationIcon.png');
+//const destinationIcon = require('../assets/destinationIcon.png');
 
 
 class HereMap extends Component {
@@ -42,15 +45,20 @@ class HereMap extends Component {
     this.state = {
       allRoutesFullPolylines: [],
     };
+    
 
     this.state = {
       listofCoordinates:[],
       routeStops: [],
       restaurantIds: [],
-      restaurantInfo:[]
+      restaurantInfo:[],
+      modalVisible: false
     };
 
-
+    setModalVisible = (visible) => {
+      this.setState({ modalVisible: visible });
+    }
+    
 
 
 
@@ -81,11 +89,12 @@ class HereMap extends Component {
     }))
     this.setState(() => ({
       restaurantInfo: [...restaurantData]
+
     }))
   }
 
-  async showAttraction(id) {
-    alert(id)
+  showAttraction(id) {
+    () => this.setModalVisible(true)
   }
 
   handleFindRoute(StopData){
@@ -117,8 +126,7 @@ class HereMap extends Component {
 
 
     this.setState( () => ({
-      listofCoordinates: [...allCoordinates]
-
+      listofCoordinates: [...allCoordinates],
     }))
 
   }
@@ -232,6 +240,29 @@ class HereMap extends Component {
 
     return (
       <View style={styles.outerView}>
+         <View>
+            <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              this.setModalVisible(!this.modalVisible);
+            }}
+          >
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>Hello World!</Text>
+                  <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={() => this.setModalVisible(!modalVisible)}
+                  >
+                    <Text style={styles.textStyle}>Hide Modal</Text>
+                  </Pressable>
+                </View>
+              </View>
+          </Modal>
+        </View>
         <Input handleFindRoute = {this.handleFindRoute.bind(this)}/>
         <MapView
           style={{ flex: 1 }}
@@ -249,28 +280,12 @@ class HereMap extends Component {
             latitude: this.props.origin.latitude,
             longitude: this.props.origin.longitude
           }}  pinColor="orange"/>
-
           {
-
-            this.state.listofCoordinates.map( busCoordinate => {
-                  return <Marker onPress ={()=>this.showAttraction(busCoordinate.id)}  id = {busCoordinate.id} coordinate = {busCoordinate}  pinColor="orange"/>
-
-
-            })
-
-
+          this.state.listofCoordinates.map( busCoordinate => {
+                  return <Marker onPress ={()=>this.showAttraction(busCoordinate.id)} id = {busCoordinate.id} coordinate = {busCoordinate}  pinColor="orange"/>
+                  //
+          })
           }
-
-
-
-          {/*/>*/}
-
-          {/*  )*/}
-          {/*}*/}
-          {/*<Marker  coordinate = {this.busStop} />*/}
-          {/*{this.showAllPolylines()}*/}
-          {/*{this.props.destination*/}
-          {/*                  && <Marker coordinate={this.props.destination} icon={destinationIcon} />}*/}
         </MapView>
       </View>
     );
@@ -292,11 +307,13 @@ const mapStateToProps = (state) => ({
 });
 
 HereMap.defaultProps = {
+  //navigation: navigationPropType,
   origin: null,
   destination: null,
 };
 
 HereMap.propTypes = {
+  //navigation: navigationPropType,
   origin: originPropType,
   destination: destinationPropType,
 };
