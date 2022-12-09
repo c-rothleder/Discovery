@@ -19,7 +19,26 @@ import Input from "./Input";
 
 class HereMap extends Component {
 
+  // const busStop = {
+  //   latitude: 37.377591,
+  //   longitude: -122.030962
+  // }
 
+  // const buildCoordinates = () => {
+  //
+  //   stops.forEach(stop => {
+  //     let coordinate = {};
+  //     stop.forEach((currStop, curIndex) => {
+  //
+  //       if(curIndex == 2)
+  //         Object.assign(coordinate, {longitude:currStop});
+  //       else if(curIndex == 3)
+  //         Object.assign(coordinate, {latitude:currStop});
+  //
+  //     })
+  //     this.listofCoordinates.push(coordinate);
+  //   })
+  // }
 
   constructor(props) {
     super(props);
@@ -35,13 +54,10 @@ class HereMap extends Component {
       restaurantInfo:[],
       modalVisible: false
     };
-
-
+    
 
     // this.getPolylineCoords = this.getPolylineCoords.bind(this);
   }
-
-  // Then, create a function to set the modal visible when the user clicks on the Marker:
 
   setModalVisible(visible) {
     this.setState({ modalVisible: visible });
@@ -51,8 +67,9 @@ class HereMap extends Component {
 
   showAttraction(id) {
     this.setModalVisible(true)
+    this.getRestaurantIds(id)
+    
   }
-
 
   async getRestaurantIds(id) {
 
@@ -82,8 +99,7 @@ class HereMap extends Component {
     }))
   }
 
-
-
+ 
   handleFindRoute(StopData){
     this.setState( () => ({
       routeStops: [...StopData]
@@ -227,29 +243,30 @@ class HereMap extends Component {
 
     return (
       <View style={styles.outerView}>
-         <View>
-           <Modal
-               animationType="slide"
-               transparent={true}
-               visible={this.state.modalVisible}
-               onRequestClose={() => {
-                 Alert.alert("Modal has been closed.");
-               }}
-           >
-             <View style={styles.centeredView}>
-               <View style={styles.modalView}>
-                 <Text style={styles.modalText}>Hello World!</Text>
+      <View>
+        <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+            }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Restaurants</Text>
 
-                 <Pressable
-                     style={[styles.button, styles.buttonClose]}
-                     onPress={() => this.setModalVisible(!this.state.modalVisible)}
-                 >
-                   <Text style={styles.textStyle}>Hide Modal</Text>
-                 </Pressable>
-               </View>
-             </View>
-           </Modal>
-        </View>
+              <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => this.setModalVisible(!this.state.modalVisible)}
+              >
+                <Text style={styles.textStyle}>Back</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+     </View>
+        
         <Input handleFindRoute = {this.handleFindRoute.bind(this)}/>
         <MapView
           style={{ flex: 1 }}
@@ -285,6 +302,49 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 100,
+    backgroundColor: "white",
+    borderRadius: 20,
+    width: 200,
+    padding: 10,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 10
+  },
+  button: {
+    borderRadius: 20,
+    padding: 20,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "rgba(222, 34, 34, 0.78)",
+    width: 100
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 300,
+    textAlign: "center"
+  }
 });
 
 const mapStateToProps = (state) => ({
