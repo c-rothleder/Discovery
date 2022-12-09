@@ -19,26 +19,7 @@ import Input from "./Input";
 
 class HereMap extends Component {
 
-  // const busStop = {
-  //   latitude: 37.377591,
-  //   longitude: -122.030962
-  // }
 
-  // const buildCoordinates = () => {
-  //
-  //   stops.forEach(stop => {
-  //     let coordinate = {};
-  //     stop.forEach((currStop, curIndex) => {
-  //
-  //       if(curIndex == 2)
-  //         Object.assign(coordinate, {longitude:currStop});
-  //       else if(curIndex == 3)
-  //         Object.assign(coordinate, {latitude:currStop});
-  //
-  //     })
-  //     this.listofCoordinates.push(coordinate);
-  //   })
-  // }
 
   constructor(props) {
     super(props);
@@ -54,32 +35,20 @@ class HereMap extends Component {
       restaurantInfo:[],
       modalVisible: false
     };
-    
+
+
 
     // this.getPolylineCoords = this.getPolylineCoords.bind(this);
   }
 
-  setModalVisible(visible) {
-    this.setState({ modalVisible: visible });
-  }
 
-// Then, create a function to show the modal when the user clicks on the Marker:
 
-  showAttraction(id) {
-    this.setModalVisible(true)
-    this.getRestaurantIds(id)
-    
-  }
 
   async getRestaurantIds(id) {
 
     const url = `https://publictransithub.com/api/restaurants/getrestaurants?stop_id=${id}`;
     const restaurantData = await fetch(url);
-    const restaurantJson = await restaurantData.json;
-    //const restaurantJson = JSON.parse(restaurantData)
-    // this.setState(() => ({
-    //   restaurantIds: [...restaurantJson]
-    // }))
+    const restaurantJson = await restaurantData.json();
     this.getRestaurantInfo(restaurantJson);
   }
 
@@ -92,14 +61,30 @@ class HereMap extends Component {
             const jsonData = await data.json();
             return jsonData;
           }
+          return null;
     }))
     this.setState(() => ({
       restaurantInfo: [...restaurantData]
 
     }))
+
   }
 
- 
+  // Then, create a function to set the modal visible when the user clicks on the Marker:
+
+  setModalVisible(visible) {
+    this.setState({ modalVisible: visible });
+  }
+
+// Then, create a function to show the modal when the user clicks on the Marker:
+
+  showAttraction(id) {
+    this.setModalVisible(true)
+    this.getRestaurantIds(id);
+  }
+
+
+
   handleFindRoute(StopData){
     this.setState( () => ({
       routeStops: [...StopData]
@@ -243,30 +228,39 @@ class HereMap extends Component {
 
     return (
       <View style={styles.outerView}>
-      <View>
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={this.state.modalVisible}
-            onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
-            }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>Restaurants</Text>
-
-              <Pressable
-                  style={[styles.button, styles.buttonClose]}
-                  onPress={() => this.setModalVisible(!this.state.modalVisible)}
-              >
-                <Text style={styles.textStyle}>Back</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-     </View>
-        
+         <View>
+           <Modal
+               animationType="slide"
+               transparent={true}
+               visible={this.state.modalVisible}
+               onRequestClose={() => {
+                 Alert.alert("Modal has been closed.");
+               }}
+           >
+             <View style={styles.centeredView}>
+               <View style={styles.modalView}>
+                <View style = {styles.textView}>
+                 <Text style={styles.modalText}> Name:
+                   {this.state.restaurantInfo[0] !== undefined ? this.state.restaurantInfo[0][4] : "Null"}</Text>
+                 <Text style={styles.modalText}> "Address - "
+                   {this.state.restaurantInfo[0] !== undefined ? this.state.restaurantInfo[0][3] : "Null"}</Text>
+                </View>
+                <View style = {styles.textView}>
+                 <Text style={styles.modalText}> Name:
+                   {this.state.restaurantInfo[0] !== undefined ? this.state.restaurantInfo[1][4] : "Null"}</Text>
+                 <Text style={styles.modalText}> "Address - "
+                   {this.state.restaurantInfo[0] !== undefined ? this.state.restaurantInfo[2][3] : "Null"}</Text>
+                </View>
+                 <Pressable
+                     style={[styles.button, styles.buttonClose]}
+                     onPress={() => this.setModalVisible(!this.state.modalVisible)}
+                 >
+                   <Text style={styles.textStyle}>Back</Text>
+                 </Pressable>
+               </View>
+             </View>
+           </Modal>
+        </View>
         <Input handleFindRoute = {this.handleFindRoute.bind(this)}/>
         <MapView
           style={{ flex: 1 }}
@@ -308,6 +302,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 22
   },
+  textView: {
+    margin: 10,
+    flexDirection: 'collumn',
+    justifyContent: "center",
+    flexWrap: 'wrap',
+    alignItems: "center",
+    marginTop: 22
+  },
   modalView: {
     margin: 100,
     backgroundColor: "white",
@@ -334,7 +336,8 @@ const styles = StyleSheet.create({
   },
   buttonClose: {
     backgroundColor: "rgba(222, 34, 34, 0.78)",
-    width: 100
+    width: 100,
+    elevation: 2
   },
   textStyle: {
     color: "white",
@@ -342,10 +345,11 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   modalText: {
-    marginBottom: 300,
+    marginBottom:100,
     textAlign: "center"
   }
 });
+
 
 const mapStateToProps = (state) => ({
   origin: state.originCoords,
