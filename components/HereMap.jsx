@@ -41,28 +41,14 @@ class HereMap extends Component {
     // this.getPolylineCoords = this.getPolylineCoords.bind(this);
   }
 
-  // Then, create a function to set the modal visible when the user clicks on the Marker:
 
-  setModalVisible(visible) {
-    this.setState({ modalVisible: visible });
-  }
-
-// Then, create a function to show the modal when the user clicks on the Marker:
-
-  showAttraction(id) {
-    this.setModalVisible(true)
-  }
 
 
   async getRestaurantIds(id) {
 
     const url = `https://publictransithub.com/api/restaurants/getrestaurants?stop_id=${id}`;
     const restaurantData = await fetch(url);
-    const restaurantJson = await restaurantData.json;
-    //const restaurantJson = JSON.parse(restaurantData)
-    // this.setState(() => ({
-    //   restaurantIds: [...restaurantJson]
-    // }))
+    const restaurantJson = await restaurantData.json();
     this.getRestaurantInfo(restaurantJson);
   }
 
@@ -75,11 +61,26 @@ class HereMap extends Component {
             const jsonData = await data.json();
             return jsonData;
           }
+          return null;
     }))
     this.setState(() => ({
       restaurantInfo: [...restaurantData]
 
     }))
+
+  }
+
+  // Then, create a function to set the modal visible when the user clicks on the Marker:
+
+  setModalVisible(visible) {
+    this.setState({ modalVisible: visible });
+  }
+
+// Then, create a function to show the modal when the user clicks on the Marker:
+
+  showAttraction(id) {
+    this.setModalVisible(true)
+    this.getRestaurantIds(id);
   }
 
 
@@ -238,8 +239,19 @@ class HereMap extends Component {
            >
              <View style={styles.centeredView}>
                <View style={styles.modalView}>
-                 <Text style={styles.modalText}>Hello World!</Text>
+                 <Text style={styles.modalText}> "Name - "
 
+                   {this.state.restaurantInfo[0] !== undefined ? this.state.restaurantInfo[0][4] : "Null"}</Text>
+                 <Text style={styles.modalText}> "Address - "
+
+                   {this.state.restaurantInfo[0] !== undefined ? this.state.restaurantInfo[0][3] : "Null"}</Text>
+
+                 <Text style={styles.modalText}> "Name - "
+
+                   {this.state.restaurantInfo[0] !== undefined ? this.state.restaurantInfo[1][4] : "Null"}</Text>
+                 <Text style={styles.modalText}> "Address - "
+
+                   {this.state.restaurantInfo[0] !== undefined ? this.state.restaurantInfo[2][3] : "Null"}</Text>
                  <Pressable
                      style={[styles.button, styles.buttonClose]}
                      onPress={() => this.setModalVisible(!this.state.modalVisible)}
@@ -285,7 +297,51 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 100,
+    backgroundColor: "white",
+    borderRadius: 20,
+    width: 200,
+    padding: 10,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 2,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 10
+  },
+  button: {
+    borderRadius: 20,
+    padding: 20,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "rgba(222, 34, 34, 0.78)",
+    width: 100
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 300,
+    textAlign: "center"
+  }
 });
+
 
 const mapStateToProps = (state) => ({
   origin: state.originCoords,
