@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
-import CardFlip from 'react-native-card-flip';
+// import CardFlip from 'react-native-card-flip';
 //import AttractionImage from './AttractionImages/AttractionImage';
 
 //import { originPropType, hereLocationPropType, navigationPropType } from '../commonPropTypes';

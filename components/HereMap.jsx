@@ -19,26 +19,7 @@ import Input from "./Input";
 
 class HereMap extends Component {
 
-  // const busStop = {
-  //   latitude: 37.377591,
-  //   longitude: -122.030962
-  // }
 
-  // const buildCoordinates = () => {
-  //
-  //   stops.forEach(stop => {
-  //     let coordinate = {};
-  //     stop.forEach((currStop, curIndex) => {
-  //
-  //       if(curIndex == 2)
-  //         Object.assign(coordinate, {longitude:currStop});
-  //       else if(curIndex == 3)
-  //         Object.assign(coordinate, {latitude:currStop});
-  //
-  //     })
-  //     this.listofCoordinates.push(coordinate);
-  //   })
-  // }
 
   constructor(props) {
     super(props);
@@ -55,15 +36,23 @@ class HereMap extends Component {
       modalVisible: false
     };
 
-    setModalVisible = (visible) => {
-      this.setState({ modalVisible: visible });
-    }
-    
-
 
 
     // this.getPolylineCoords = this.getPolylineCoords.bind(this);
   }
+
+  // Then, create a function to set the modal visible when the user clicks on the Marker:
+
+  setModalVisible(visible) {
+    this.setState({ modalVisible: visible });
+  }
+
+// Then, create a function to show the modal when the user clicks on the Marker:
+
+  showAttraction(id) {
+    this.setModalVisible(true)
+  }
+
 
   async getRestaurantIds(id) {
 
@@ -93,9 +82,7 @@ class HereMap extends Component {
     }))
   }
 
-  showAttraction(id) {
-    () => this.setModalVisible(true)
-  }
+
 
   handleFindRoute(StopData){
     this.setState( () => ({
@@ -241,27 +228,27 @@ class HereMap extends Component {
     return (
       <View style={styles.outerView}>
          <View>
-            <Modal
-            animationType="slide"
-            transparent={true}
-            visible={this.modalVisible}
-            onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
-              this.setModalVisible(!this.modalVisible);
-            }}
-          >
-              <View style={styles.centeredView}>
-                <View style={styles.modalView}>
-                  <Text style={styles.modalText}>Hello World!</Text>
-                  <Pressable
-                    style={[styles.button, styles.buttonClose]}
-                    onPress={() => this.setModalVisible(!modalVisible)}
-                  >
-                    <Text style={styles.textStyle}>Hide Modal</Text>
-                  </Pressable>
-                </View>
-              </View>
-          </Modal>
+           <Modal
+               animationType="slide"
+               transparent={true}
+               visible={this.state.modalVisible}
+               onRequestClose={() => {
+                 Alert.alert("Modal has been closed.");
+               }}
+           >
+             <View style={styles.centeredView}>
+               <View style={styles.modalView}>
+                 <Text style={styles.modalText}>Hello World!</Text>
+
+                 <Pressable
+                     style={[styles.button, styles.buttonClose]}
+                     onPress={() => this.setModalVisible(!this.state.modalVisible)}
+                 >
+                   <Text style={styles.textStyle}>Hide Modal</Text>
+                 </Pressable>
+               </View>
+             </View>
+           </Modal>
         </View>
         <Input handleFindRoute = {this.handleFindRoute.bind(this)}/>
         <MapView
